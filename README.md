@@ -2,6 +2,8 @@
 
 A full-stack football analytics dashboard built with **React + IBM Carbon Design System** on the frontend and **FastAPI (Python)** on the backend.
 
+🔗 **[Live Demo](https://player-dashboard1.onrender.com)** &nbsp;|&nbsp; 🔌 **[API](https://player-dashboard1-api.onrender.com/docs)**
+
 ---
 
 ## Features
