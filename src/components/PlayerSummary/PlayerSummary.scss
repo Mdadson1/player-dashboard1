@@ -1,0 +1,27 @@
+.player-summary {
+  margin-top: 1rem;
+  max-width: 400px;
+
+  &__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #525252; // Carbon Gray 70
+    margin: 0 0 0.75rem;
+  }
+
+  &__text {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #161616; // Carbon Gray 100
+    margin: 0 0 0.75rem;
+  }
+
+  &__source {
+    font-size: 0.75rem;
+    color: #525252; // Carbon Gray 70
+    margin: 0;
+    font-style: italic;
+  }
+}

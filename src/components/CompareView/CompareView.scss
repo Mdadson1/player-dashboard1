@@ -1,0 +1,94 @@
+.compare-view {
+  margin-top: 1.5rem;
+  max-width: 860px;
+
+  &__heading {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #161616;
+    margin: 0 0 1.25rem;
+  }
+
+  &__grid {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  &__divider {
+    width: 1px;
+    align-self: stretch;
+    background: #e0e0e0;
+    flex-shrink: 0;
+    margin: 0 1.5rem;
+  }
+}
+
+.compare-card {
+  flex: 1;
+  text-align: center;
+
+  &__slot-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #525252;
+    margin-bottom: 0.75rem;
+  }
+
+  &__empty {
+    font-size: 0.875rem;
+    color: #8d8d8d;
+    padding: 2rem 0;
+    font-style: italic;
+  }
+
+  &__photo-wrap {
+    margin-bottom: 0.75rem;
+  }
+
+  &__photo {
+    border-radius: 50%;
+    object-fit: cover;
+    width: 96px;
+    height: 96px;
+    border: 2px solid #e0e0e0;
+  }
+
+  &__name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 1rem;
+    color: #161616;
+  }
+
+  &__stats {
+    margin: 0;
+    text-align: left;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid #e0e0e0;
+
+    &:last-child { border-bottom: none; }
+  }
+
+  &__dt {
+    font-size: 0.8rem;
+    color: #525252;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  &__dd {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #161616;
+    margin: 0;
+  }
+}

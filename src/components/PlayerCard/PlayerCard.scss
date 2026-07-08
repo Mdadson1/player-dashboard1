@@ -1,0 +1,55 @@
+.player-card {
+  margin-top: 1.5rem;
+  max-width: 400px;
+  text-align: center;
+
+  &__photo-wrap {
+    margin-bottom: 1rem;
+  }
+
+  &__photo {
+    border-radius: 50%;
+    object-fit: cover;
+    width: 120px;
+    height: 120px;
+    border: 3px solid #e0e0e0; // Carbon Gray 20
+  }
+
+  &__name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 1.25rem;
+    color: #161616; // Carbon Gray 100
+  }
+
+  &__stats {
+    margin: 0;
+    text-align: left;
+  }
+
+  &__stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #e0e0e0; // Carbon Gray 20
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__stat-label {
+    font-size: 0.875rem;
+    color: #525252; // Carbon Gray 70
+    font-weight: 400;
+    margin: 0;
+  }
+
+  &__stat-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #161616; // Carbon Gray 100
+    margin: 0;
+  }
+}

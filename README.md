@@ -1,92 +1,128 @@
-<p align="center">
-    <a href="http://kitura.io/">
-        <img src="https://landscape.cncf.io/logos/ibm-member.svg" height="100" alt="IBM Cloud">
-    </a>
-</p>
+# Premier League Player Dashboard
 
-<p align="center">
-    <a href="https://cloud.ibm.com">
-    <img src="https://img.shields.io/badge/IBM%20Cloud-powered-blue.svg" alt="IBM Cloud">
-    </a>
-    <img src="https://img.shields.io/badge/platform-node-lightgrey.svg?style=flat" alt="platform">
-    <img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="Apache 2">
-</p>
+A full-stack football analytics dashboard built with **React + IBM Carbon Design System** on the frontend and **FastAPI (Python)** on the backend.
 
-# Carbon React with Node.js
+---
 
-React is a popular framework for creating user interfaces in modular components. In this sample application, you will create a web application using Express and React to serve web pages in Node.js, complete with standard best practices, including a health check and application metric monitoring.
+## Features
 
-This app contains an opinionated set of components for modern web development, including:
+### Player Browser
+- Search players by name or club
+- Filter by position (Goalkeeper, Defender, Midfielder, Attacker)
+- Sort by name, rating, or age
+- Detailed player card with photo, stats, and auto-generated grounded summary
+- **Compare mode** — view two players side-by-side
 
-* [React](https://facebook.github.io/react/)
-* [Sass](http://sass-lang.com/) 
-* [Carbon](https://www.carbondesignsystem.com/)
-* [Create React App](https://github.com/facebook/create-react-app)
+### Team Formation Visualizer
+- Four tactical formations: **4-4-2**, **4-3-3**, **3-5-2**, **5-3-2**
+- Position-aware random team generator (picks real Goalkeepers, Defenders, etc.)
+- Interactive SVG football pitch with official markings (penalty areas, D-rings, corner arcs, goal nets)
+- **Hover tooltips** on each player token
+- **Click any player** to open a detail side panel
 
-### Deploying 
+---
 
-After you have created a new git repo from this git template, remember to rename the project.
-Edit `package.json` and change the default name to the name you used to create the template.
+## Tech Stack
 
-Make sure you are logged into the IBM Cloud using the IBM Cloud CLI and have access 
-to you development cluster. If you are using OpenShift make sure you have logged into OpenShift CLI on the command line.
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, IBM Carbon Design System, SCSS |
+| Backend API | Python 3, FastAPI, Uvicorn |
+| Data | API-Football (2023 Premier League season, 414 players) |
+| Process manager | pm2 |
 
-```$bash
-npm install --location=global @ibmgaragecloud/cloud-native-toolkit-cli
+---
+
+## Project Structure
+
+```
+├── api/
+│   └── main.py           # FastAPI server — /api/players, /api/team, /api/positions
+├── scripts/
+│   └── fetchPlayers.js   # One-time data fetcher (Node.js, API-Football)
+├── server/
+│   └── server.js         # Express server — serves React build, proxies /api/* to FastAPI
+├── src/
+│   ├── components/
+│   │   ├── CompareView/      # Side-by-side player comparison
+│   │   ├── FormationBoard/   # SVG pitch + player tokens + tooltips
+│   │   ├── PlayerCard/       # Individual player stat card
+│   │   ├── PlayerSelect/     # Player dropdown
+│   │   ├── PlayerSummary/    # Auto-generated grounded text summary
+│   │   └── PositionFilter/   # Position dropdown filter
+│   ├── data/
+│   │   └── players.json      # 414 Premier League players (2023 season)
+│   └── utils/
+│       └── teamGenerator.js  # Position-aware team generation logic
+└── requirements.txt          # Python dependencies
 ```
 
-Use the IBM Garage for Cloud CLI to register the GIT Repo with Tekton or Jenkins, using `--tekton` flag if using Tekton:
+---
 
-```$bash
-oc sync <project> [--tekton]
-oc pipeline
-```
+## Getting Started
 
-Ensure you have the Cloud-Native Toolkit installed in your cluster to make this method of pipeline registry quick and easy [Cloud-Native Toolkit](https://cloudnativetoolkit.dev/)
+### Prerequisites
+- Node.js 18+
+- Python 3.10+
+- An [API-Football](https://www.api-football.com/) free account (only needed to re-fetch player data)
 
-#### Native Application Development
-
-Install the latest [Node.js](https://nodejs.org/en/download/) 6+ LTS version.
-
-Once the Node toolchain has been installed, you can download the project dependencies with:
+### Install dependencies
 
 ```bash
-npm install -g yarn
+# JavaScript
 yarn install
+
+# Python
+pip install -r requirements.txt
 ```
 
-##### Local development
+### Run in development
 
-To run application for local development and get live updates on code changes:
+```bash
+# Terminal 1 — FastAPI backend (port 8000)
+uvicorn api.main:app --reload --port 8000
 
-```sh
+# Terminal 2 — React dev server (port 3000, proxies /api/* to 8000)
 yarn start:dev
 ```
 
-##### Test
+Open [http://localhost:3000](http://localhost:3000).
 
-To run unit tests:
+### Run in production
 
-```sh
-yarn test
-```
-
-##### Run production build
-
-To try a production build, run:
-
-```sh
+```bash
 yarn build
-yarn start
+uvicorn api.main:app --port 8000 &
+node server/server.js
 ```
 
-## Next Steps
+Or with pm2:
+```bash
+pm2 start "uvicorn api.main:app --port 8000" --name api
+pm2 start "node server/server.js" --name frontend
+pm2 save
+```
 
-* Learn more about augmenting your Node.js applications on IBM Cloud with the [Node Programming Guide](https://cloud.ibm.com/docs/node?topic=nodejs-getting-started).
-* Explore other [sample applications](https://cloud.ibm.com/developer/appservice/starter-kits) on IBM Cloud.
+---
+
+## API Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/players` | All players; supports `?search=`, `?position=`, `?sort=` |
+| GET | `/api/players/{name}` | Single player by name |
+| GET | `/api/team?formation=4-4-2` | 11 position-matched players for a formation |
+| GET | `/api/positions` | Distinct positions in the dataset |
+| GET | `/health` | Health check |
+
+---
+
+## Data
+
+Player data was fetched from the [API-Football](https://www.api-football.com/) REST API for the **2023 Premier League season** (league ID 39) across 8 top clubs. The dataset includes name, photo, position, age, nationality, club, height, and performance rating.
+
+---
 
 ## License
 
-This sample application is licensed under the Apache License, Version 2. Separate third-party code objects invoked within this code pattern are licensed by their respective providers pursuant to their own separate licenses. Contributions are subject to the [Developer Certificate of Origin, Version 1.1](https://developercertificate.org/) and the [Apache License, Version 2](https://www.apache.org/licenses/LICENSE-2.0.txt).
-
-[Apache License FAQ](https://www.apache.org/foundation/license-faq.html#WhatDoesItMEAN)
+MIT
