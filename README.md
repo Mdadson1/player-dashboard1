@@ -86,7 +86,7 @@ uvicorn api.main:app --reload --port 8000
 yarn start:dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open (http://localhost:3000).
 (If an error occurs, refresh page once)
 ### Run in production
 
