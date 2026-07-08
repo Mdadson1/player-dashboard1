@@ -28,6 +28,11 @@ async function apiFetch(path) {
   return res.json();
 }
 
+// Kick off the players fetch immediately — before React even mounts.
+// The useEffect below picks up this same promise, so the data is already
+// in-flight (or resolved) by the time the component renders.
+const playersPromise = apiFetch('/api/players?sort=name-asc');
+
 // ─── Sort options ─────────────────────────────────────────────────────────────
 
 const SORT_OPTIONS = [
@@ -64,9 +69,9 @@ function App() {
   const [playersLoading, setPlayersLoading] = useState(true);
   const [playersError,   setPlayersError]   = useState(null);
 
-  // Load full player list once on mount
+  // Consume the pre-started promise — data may already be resolved by now
   useEffect(() => {
-    apiFetch('/api/players?sort=name-asc')
+    playersPromise
       .then(data => { setAllPlayers(data); setPlayersLoading(false); })
       .catch(err  => { setPlayersError(err.message); setPlayersLoading(false); });
   }, []);
@@ -154,7 +159,9 @@ function App() {
         <main className="app-main">
 
           {playersLoading && (
-            <InlineLoading description="Loading players from API…" />
+            <div className="app-loading">
+              <InlineLoading description="Loading players…" status="active" />
+            </div>
           )}
 
           {playersError && (
