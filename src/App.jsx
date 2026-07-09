@@ -38,7 +38,19 @@ async function apiFetch(path, attempts = 6, delayMs = 3000) {
 }
 
 // Kick off the players fetch immediately — before React even mounts.
-const playersPromise = apiFetch('/api/players?sort=name-asc');
+// sessionStorage cache: skip the network on repeat visits within the same tab session.
+const CACHE_KEY = 'players_v1';
+function loadPlayers() {
+  try {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) return Promise.resolve(JSON.parse(cached));
+  } catch (_) {}
+  return apiFetch('/api/players?sort=name-asc').then(data => {
+    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (_) {}
+    return data;
+  });
+}
+const playersPromise = loadPlayers();
 
 // ─── Sort options ─────────────────────────────────────────────────────────────
 

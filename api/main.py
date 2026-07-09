@@ -120,16 +120,32 @@ def _generate_team(players: list[dict], roles: list[str]) -> list[dict]:
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
+from fastapi.responses import Response
+import json as _json
+
+# Pre-serialise the default response (no filters, name-asc) once at startup
+_default_players = _sort(ALL_PLAYERS, "name-asc")
+_default_json    = _json.dumps([dict(p) for p in _default_players]).encode()
+
 @app.get("/api/players", response_model=list[Player], summary="List players")
 def list_players(
     search:   str      = Query("",          description="Filter by name or club (case-insensitive)"),
     position: str      = Query("",          description="Filter by position"),
     sort:     SortKey  = Query("name-asc",  description="Sort order"),
+    response: Response = None,
 ):
     """
     Return the full player list, optionally filtered by search term and/or
     position, and sorted by the given key.
     """
+    # Fast path: unfiltered name-asc is pre-serialised at startup
+    if not search and not position and sort == "name-asc":
+        return Response(
+            content=_default_json,
+            media_type="application/json",
+            headers={"Cache-Control": "public, max-age=300"},  # browser caches 5 min
+        )
+
     result = ALL_PLAYERS
 
     if position:
