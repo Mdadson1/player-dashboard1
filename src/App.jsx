@@ -22,15 +22,22 @@ import './App.scss';
 
 const API = process.env.REACT_APP_API_URL ?? 'http://localhost:8000';
 
-async function apiFetch(path) {
-  const res = await fetch(`${API}${path}`);
-  if (!res.ok) throw new Error(`API ${path} → ${res.status}`);
-  return res.json();
+// Retry up to `attempts` times with exponential back-off.
+// Render free tier can take 30-50s to wake — this keeps retrying silently.
+async function apiFetch(path, attempts = 6, delayMs = 3000) {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fetch(`${API}${path}`);
+      if (res.ok) return res.json();
+      throw new Error(`${res.status}`);
+    } catch (err) {
+      if (i === attempts - 1) throw new Error(`Could not reach API after ${attempts} attempts.`);
+      await new Promise(r => setTimeout(r, delayMs * (i + 1))); // 3s, 6s, 9s…
+    }
+  }
 }
 
 // Kick off the players fetch immediately — before React even mounts.
-// The useEffect below picks up this same promise, so the data is already
-// in-flight (or resolved) by the time the component renders.
 const playersPromise = apiFetch('/api/players?sort=name-asc');
 
 // ─── Sort options ─────────────────────────────────────────────────────────────
@@ -160,7 +167,7 @@ function App() {
 
           {playersLoading && (
             <div className="app-loading">
-              <InlineLoading description="Loading players…" status="active" />
+              <InlineLoading description="Starting up — this may take up to 30 seconds on first load…" status="active" />
             </div>
           )}
 
